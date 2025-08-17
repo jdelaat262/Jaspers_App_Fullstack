@@ -1,6 +1,10 @@
 .navbar-brand{
     font-weight: bold;
 }
+/*navbar kleur */
+.bg-gold-custom {
+    background-color: #FFD700; 
+}
 
 h1{
 text-align: center;
@@ -21,13 +25,13 @@ body {
     align-items: center;
     min-height: 100vh;
     margin: 0;
-    padding-top: 56px;
+    padding-top: 70px;
     }
 .btn-primary {
-      background-color: #FFD700; /* Gouden achtergrondkleur voor de knop */
+      background-color: #FFD700; 
       border-color: #FFD700;
       border-radius: 0.5rem;
-      color: #000; /* Zwarte tekstkleur voor de knop */
+      color: #000; 
       transition: background-color 0.3s ease, border-color 0.3s ease, box-shadow 0.3s ease;
       margin-top: 1rem;
       text-align: center;
@@ -36,31 +40,24 @@ body {
       background-color: #e6c200; /* Iets donkerder goud bij hover */
       border-color: #e6c200;
       box-shadow: 0 0.25rem 0.5rem rgba(255, 215, 0, 0.25); /* Gouden schaduw bij hover */
-      color: #000; /* Zwarte tekstkleur ook bij hover */
+      color: #000; 
     }
-
-.bg-gold-custom {
-    background-color: #FFD700; 
-}
 
 form{
     background-color: black;
     color: white;
-    width: 400px; 
+    width: 95%;
+    max-width: 600px; 
     padding: 20px;
     margin-top: 1rem;
     border-radius: 1rem;
 }
-
-#emailHelp {
-    color: white; 
-}
-
-.radio-group {
+.radio-aanhef {
     display: flex; 
     gap: 1.0rem;   
     }
 #aanhef {
     font-family: 'Inter', sans-serif;
     color: white;
+    margin-bottom: 0.5rem;
 }
