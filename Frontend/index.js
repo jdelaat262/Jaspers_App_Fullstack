@@ -26,7 +26,7 @@ function initDeelnemerForm() {
 }
 
 document.addEventListener('DOMContentLoaded', function() {
-  const form = document.getElementById('cursus-deelnemer-formulier');
+  const form = document.getElementById('form-per-cursus');
 
   if (form) {
     form.addEventListener('submit', function(event) {
@@ -34,17 +34,20 @@ document.addEventListener('DOMContentLoaded', function() {
       event.preventDefault();
 
       // Haal de waarden op van de velden die je wilt behouden
-      const cursusTitelWaarde = document.getElementById('cursusTitel').value;
+      const cursusWaarde = document.getElementById('cursus').value;
       const cursusDatumWaarde = document.getElementById('cursusDatum').value;
+      const isRefresherChecked = document.getElementById('refresherCheck').checked;
       
       // Verwerk hier je formuliergegevens
       console.log('Formulier verzonden!');
-      console.log('Cursus Titel:', cursusTitelWaarde);
+      console.log('Cursus:', cursusWaarde);
       console.log('Cursus Datum:', cursusDatumWaarde);
+      console.log('Is de refresher aangevinkt?', isRefresherChecked);
       
       // Plaats de waarden terug in de velden die je wilt behouden
-      document.getElementById('cursusTitel').value = cursusTitelWaarde;
+      document.getElementById('cursus').value = cursusWaarde;
       document.getElementById('cursusDatum').value = cursusDatumWaarde;
+      document.getElementById('refresherCheck').checked = isRefresherChecked;
       
       // Maak de deelnemersvelden leeg
       document.getElementById('deelnemerNaam').value = '';

@@ -36,13 +36,19 @@
     <p class="lead text-center">We gaan hier nog een paar mooie teksten en afbeeldingen plaatsen, even geduld nog!</p>
 </div>
 
-<form id="cursus-deelnemer-formulier">
+<form id="form-per-cursus">
   <h3>Cursusgegevens</h3>
-  <div class="mb-3">
-    <label for="cursusTitel" class="form-label">Titel</label>
-    <input type="text" class="form-control" id="cursusTitel">
+  <div class="mb-1">
+  <div class="d-flex align-items-center">
+    <label for="cursus" class="form-label mb-0 me-auto">Cursus</label>
+    <div class="form-check">
+      <input class="form-check-input" type="checkbox" id="refresherCheck">
+      <label class="form-check-label" for="refresherCheck">Refresher</label>
+    </div>
   </div>
-  <div class="mb-3">
+  <input type="text" placeholder="Cursus" class="form-control" id="cursus" aria-describedby="cursus">
+</div>
+  <div class="mb-1">
     <label for="cursusDatum" class="form-label">Datum</label>
     <input type="text" class="form-control" id="cursusDatum">
   </div>
