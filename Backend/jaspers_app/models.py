@@ -1,11 +1,18 @@
 from django.db import models
 
-class Contact(models.Model):
-    name = models.CharField(max_length=100)
+class Deelnemer(models.Model):
+    aanhef = models.CharField(max_length=5, blank=True)
+    voornaam = models.CharField(max_length=100)
+    tussenvoegsel = models.CharField(max_length=50, blank=True)
+    achternaam = models.CharField(max_length=100)
+    bedrijfsnaam = models.CharField(max_length=200, blank=True)
     email = models.EmailField()
-    message = models.TextField()
+    geboortedatum = models.DateField(blank=True, null=True)
+    refresher = models.BooleanField(default=False)
+    cursus = models.CharField(max_length=200)
+    cursusdatum = models.DateField()
+    geldigheid = models.CharField(max_length=50) # Bijv. "1 jaar" of "custom"
+    winda_id = models.CharField(max_length=20, blank=True)
     
-    # De __str__ methode geeft een leesbare naam
-    # van de objecten in de Django Admin
     def __str__(self):
-        return self.name
+        return f"{self.voornaam} {self.achternaam}"

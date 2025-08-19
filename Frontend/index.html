@@ -37,96 +37,87 @@
 </div>
 
 <form id="form-per-deelnemer">
-
     <h2 class="text mb-2">Certificaten per Deelnemer</h2>
-<p class="text mb-2">Voer de gegevens van de deelnemer in om een certificaat aan te maken.</p>
-
-<div id="aanhef" class="form-text">Aanhef:</div>
-
-  <div class="radio-aanhef">
-    <div class="mb-1">
-        <label for="aanhefDhr" class="form-label">
-            <input type="radio" name="aanhef" id="aanhefDhr" value="dhr" class="form-check-input" aria-describedby="aanhefDhr"> Dhr. 
-        </label>
-    </div>
-    <div class="mb-1">
-        <label for="aanhefMevr" class="form-label">
-            <input type="radio" name="aanhef" id="aanhefMevr" value="mevr" class="form-check-input" aria-describedby="aanhefMevr"> Mevr.
-        </label>
+    <p class="text mb-2">Voer de gegevens van de deelnemer in om een certificaat aan te maken.</p>
+    
+    <div id="aanhef" class="form-text">Aanhef:</div>
+    <div class="radio-aanhef">
+        <div class="mb-1">
+            <label for="aanhefDhr" class="form-label">
+                <input type="radio" name="aanhef" id="aanhefDhr" value="dhr" class="form-check-input" aria-describedby="aanhefDhr"> Dhr. 
+            </label>
+        </div>
+        <div class="mb-1">
+            <label for="aanhefMevr" class="form-label">
+                <input type="radio" name="aanhef" id="aanhefMevr" value="mevr" class="form-check-input" aria-describedby="aanhefMevr"> Mevr.
+            </label>
         </div>
     </div> 
-
-  <div class="mb-1">
-    <label for="voornaam" class="form-label" aria-placeholder="Voornaam">Voornaam</label>
-    <input type="firstname" placeholder="bv. 'Beau'" class="form-control" id="voornaam" aria-describedby="voornaam">
-  </div>
-
-  <div class="mb-1">
-    <label for="tussenvoegsel" class="form-label" aria-placeholder="Tussenvoegsel">Tussenvoegsel</label>
-    <input type="tussenvoegsel" placeholder="bv. 'ter'" class="form-control" id="tussenvoegsel" aria-describedby="tussenvoegsel">
-  </div>
-
-  <div class="mb-1">
-    <label for="achternaam" class="form-label" aria-placeholder="Achternaam">Achternaam</label>
-    <input type="achternaam" placeholder="bv. 'Ham'" class="form-control" id="achternaam" aria-describedby="achternaam">
-  </div>
-
-   <div class="mb-1">
-    <label for="bedrijfsnaam" class="form-label">Bedrijfsnaam</label>
-    <input type="text" placeholder="Bedrijfsnaam" class="form-control" id="bedrijfsnaam" aria-describedby="bedrijfsnaam">
-  </div>
-
-  <div class="mb-1">
-    <label for="email" class="form-label">e-mailadres</label>
-    <input type="email" placeholder="bv. 'iets@ietsanders.nl'" class="form-control" id="email" aria-describedby="email">
-    <!-- <div id="emailHelp" class="form-text">We'll never share your email with anyone else.</div> -->
-  </div>
-
-  <div class="mb-1">
-    <label for="geboortedatum" class="form-label">Geboortedatum</label>
-    <input type="text" placeholder="dd-mm-jjjj" class="form-control" id="geboortedatum" aria-describedby="geboortedatum">
-  </div>
-
-  <!-- <div class="mb-1">
-    <label for="cursus" class="form-label">Cursus</label>
-    <input type="text" placeholder="Cursus" class="form-control" id="cursus" aria-describedby="cursus">
-  </div> -->
-
-<div class="mb-1">
-  <div class="d-flex align-items-center">
-    <label for="cursus" class="form-label mb-0 me-auto">Cursus</label>
-    <div class="form-check">
-      <input class="form-check-input" type="checkbox" id="refresherCheck">
-      <label class="form-check-label" for="refresherCheck">Refresher</label>
+    
+    <div class="mb-1">
+        <label for="voornaam" class="form-label">Voornaam</label>
+        <input type="text" name="voornaam" placeholder="bv. 'Beau'" class="form-control" id="voornaam">
     </div>
-  </div>
-  <input type="text" placeholder="Cursus" class="form-control" id="cursus" aria-describedby="cursus">
-</div>
 
-  <div class="mb-1">
-    <label for="cursusdatum" class="form-label">Cursusdatum</label>
-    <input type="text" placeholder="dd-mm-jjjj" class="form-control" id="cursusdatum" aria-describedby="cursusdatum">
-  </div>
+    <div class="mb-1">
+        <label for="tussenvoegsel" class="form-label">Tussenvoegsel</label>
+        <input type="text" name="tussenvoegsel" placeholder="bv. 'ter'" class="form-control" id="tussenvoegsel">
+    </div>
 
- <div class="mb-1">
-    <label for="geldigheid-jaren" class="form-label">Geldig tot en met</label>
-    <select class="form-select" id="geldigheid-jaren" aria-label="Geldigheid in jaren">
-        <option selected>Kies...</option>
-        <option value="1">1 jaar</option>
-        <option value="2">2 jaar</option>
-        <option value="3">3 jaar</option>
-        <option value="custom">Zelf invoeren...</option>
-    </select>
+    <div class="mb-1">
+        <label for="achternaam" class="form-label">Achternaam</label>
+        <input type="text" name="achternaam" placeholder="bv. 'Ham'" class="form-control" id="achternaam">
+    </div>
 
-    <input type="text" class="form-control mt-2" id="geldigheid-datum-input" placeholder="dd-mm-jjjj" hidden>
-</div>
+    <div class="mb-1">
+        <label for="bedrijfsnaam" class="form-label">Bedrijfsnaam</label>
+        <input type="text" name="bedrijfsnaam" placeholder="Bedrijfsnaam" class="form-control" id="bedrijfsnaam">
+    </div>
 
-  <div class="mb-1">
-    <label for="windaId" class="form-label">Winda ID (optioneel)</label>
-    <input type="text" placeholder="AB123456CD" class="form-control" id="windaId" aria-describedby="windaId">
-  </div>
+    <div class="mb-1">
+        <label for="email" class="form-label">e-mailadres</label>
+        <input type="email" name="email" placeholder="bv. 'iets@ietsanders.nl'" class="form-control" id="email">
+    </div>
 
-  <button type="submit" class="btn btn-primary">Verstuur die gegevens!</button>
+    <div class="mb-1">
+        <label for="geboortedatum" class="form-label">Geboortedatum</label>
+        <input type="date" name="geboortedatum" class="form-control" id="geboortedatum">
+    </div>
+
+    <div class="mb-1">
+        <div class="d-flex align-items-center">
+            <label for="cursus" class="form-label mb-0 me-auto">Cursus</label>
+            <div class="form-check">
+                <input class="form-check-input" type="checkbox" name="refresher" id="refresherCheck">
+                <label class="form-check-label" for="refresherCheck">Refresher</label>
+            </div>
+        </div>
+        <input type="text" name="cursus" placeholder="Cursus" class="form-control" id="cursus">
+    </div>
+
+    <div class="mb-1">
+        <label for="cursusdatum" class="form-label">Cursusdatum</label>
+        <input type="date" name="cursusdatum" class="form-control" id="cursusdatum">
+    </div>
+
+    <div class="mb-1">
+        <label for="geldigheid-jaren" class="form-label">Geldig tot en met</label>
+        <select class="form-select" id="geldigheid-jaren" name="geldigheid" aria-label="Geldigheid in jaren">
+            <option selected>Kies...</option>
+            <option value="1">1 jaar na dato</option>
+            <option value="2">2 jaar na dato</option>
+            <option value="3">3 jaar na dato</option>
+            <option value="custom">Zelf invoeren...</option>
+        </select>
+        <input type="text" class="form-control mt-2" id="geldigheid-datum-input" placeholder="dd-mm-jjjj" hidden>
+    </div>
+
+    <div class="mb-1">
+        <label for="windaId" class="form-label">Winda ID (optioneel)</label>
+        <input type="text" name="winda_id" placeholder="AB123456CD" class="form-control" id="windaId">
+    </div>
+
+    <button type="submit" class="btn btn-primary">Verstuur die gegevens!</button>
 </form>
 </div>
 
