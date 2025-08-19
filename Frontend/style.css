@@ -74,6 +74,7 @@ form{
   cursor: pointer;
   transition: background-color 0.3s ease, border-color 0.3s ease, box-shadow 0.3s ease;
   margin-top: 1rem;
+  margin-bottom: 1rem;
 }
 /* Voeg een hover-effect toe voor een professionele look */
 .test-knop:hover {
