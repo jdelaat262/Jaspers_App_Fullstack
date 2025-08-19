@@ -40,6 +40,7 @@
 
     <h2 class="text mb-2">Certificaten per Deelnemer</h2>
 <p class="text mb-2">Voer de gegevens van de deelnemer in om een certificaat aan te maken.</p>
+
 <div id="aanhef" class="form-text">Aanhef:</div>
 
   <div class="radio-aanhef">
@@ -107,14 +108,17 @@
     <input type="text" placeholder="dd-mm-jjjj" class="form-control" id="cursusdatum" aria-describedby="cursusdatum">
   </div>
 
-  <div class="mb-1">
-  <label for="geldigheid-jaren" class="form-label">Geldigheid in jaren</label>
-  <select class="form-select" id="geldigheid-jaren" aria-label="Geldigheid in jaren">
-    <option selected>Kies...</option>
-    <option value="1">1 jaar</option>
-    <option value="2">2 jaar</option>
-    <option value="3">3 jaar</option>
-  </select>
+ <div class="mb-1">
+    <label for="geldigheid-jaren" class="form-label">Geldig tot en met</label>
+    <select class="form-select" id="geldigheid-jaren" aria-label="Geldigheid in jaren">
+        <option selected>Kies...</option>
+        <option value="1">1 jaar</option>
+        <option value="2">2 jaar</option>
+        <option value="3">3 jaar</option>
+        <option value="custom">Zelf invoeren...</option>
+    </select>
+
+    <input type="text" class="form-control mt-2" id="geldigheid-datum-input" placeholder="dd-mm-jjjj" hidden>
 </div>
 
   <div class="mb-1">

@@ -27,6 +27,8 @@ function initDeelnemerForm() {
 
 document.addEventListener('DOMContentLoaded', function() {
   const form = document.getElementById('form-per-cursus');
+  const dropdown = document.getElementById('geldigheid-jaren');
+  const datumInput = document.getElementById('geldigheid-datum-input');
 
   if (form) {
     form.addEventListener('submit', function(event) {
@@ -37,21 +39,42 @@ document.addEventListener('DOMContentLoaded', function() {
       const cursusWaarde = document.getElementById('cursus').value;
       const cursusDatumWaarde = document.getElementById('cursusDatum').value;
       const isRefresherChecked = document.getElementById('refresherCheck').checked;
+      const geldigheidWaarde = document.getElementById('geldigheid-jaren').value;
+      const aangepasteDatumWaarde = document.getElementById('geldigheid-datum-input').value;
       
       // Verwerk hier je formuliergegevens
       console.log('Formulier verzonden!');
       console.log('Cursus:', cursusWaarde);
       console.log('Cursus Datum:', cursusDatumWaarde);
       console.log('Is de refresher aangevinkt?', isRefresherChecked);
+      console.log('Geldigheid:', geldigheidWaarde);
+      console.log('Aangepaste datum:', aangepasteDatumWaarde);
       
       // Plaats de waarden terug in de velden die je wilt behouden
       document.getElementById('cursus').value = cursusWaarde;
       document.getElementById('cursusDatum').value = cursusDatumWaarde;
       document.getElementById('refresherCheck').checked = isRefresherChecked;
-      
+      document.getElementById('geldigheid-jaren').value = geldigheidWaarde;
+      document.getElementById('geldigheid-datum-input').value = aangepasteDatumWaarde;
+
       // Maak de deelnemersvelden leeg
-      document.getElementById('deelnemerNaam').value = '';
-      document.getElementById('deelnemerEmail').value = '';
+      document.getElementById('voornaam').value = '';
+      document.getElementById('tussenvoegsel').value = '';
+      document.getElementById('achternaam').value = '';
+      document.getElementById('bedrijfsnaam').value = '';
+      document.getElementById('email').value = '';
+      document.getElementById('geboortedatum').value = '';
+      document.getElementById('windaId').value = '';
+    });
+  }
+
+  if (dropdown && datumInput) {
+    dropdown.addEventListener('change', function() {
+      if (this.value === 'custom') {
+        datumInput.hidden = false;
+      } else {
+        datumInput.hidden = true;
+      }
     });
   }
 });

@@ -37,7 +37,10 @@
 </div>
 
 <form id="form-per-cursus">
-  <h3>Cursusgegevens</h3>
+
+  <h2 class="text mb-2">Certificaten per Cursus</h2>
+<p class="text mb-2">De waarden boven de streep, blijven staan na het versturen van de gegevens</p>
+
   <div class="mb-1">
   <div class="d-flex align-items-center">
     <label for="cursus" class="form-label mb-0 me-auto">Cursus</label>
@@ -49,23 +52,76 @@
   <input type="text" placeholder="Cursus" class="form-control" id="cursus" aria-describedby="cursus">
 </div>
   <div class="mb-1">
-    <label for="cursusDatum" class="form-label">Datum</label>
-    <input type="text" class="form-control" id="cursusDatum">
+    <label for="cursusDatum" class="form-label">Cursusdatum</label>
+    <input type="text" class="form-control" placeholder="dd-mm-jjjj" id="cursusDatum">
   </div>
+  <div class="mb-1">
+    <label for="geldigheid-jaren" class="form-label">Geldig tot en met</label>
+    <select class="form-select" id="geldigheid-jaren" aria-label="Geldigheid in jaren">
+        <option selected>Kies...</option>
+        <option value="1">1 jaar na dato</option>
+        <option value="2">2 jaar na dato</option>
+        <option value="3">3 jaar na dato</option>
+        <option value="custom">Zelf invoeren...</option>
+    </select>
+
+    <input type="text" class="form-control mt-2" id="geldigheid-datum-input" placeholder="dd-mm-jjjj" hidden>
+</div>
   
   <hr>
   
   <h3>Deelnemersgegevens</h3>
-  <div class="mb-3">
-    <label for="deelnemerNaam" class="form-label">Naam</label>
-    <input type="text" class="form-control" id="deelnemerNaam">
+  <div id="aanhef" class="form-text">Aanhef:</div>
+
+  <div class="radio-aanhef">
+    <div class="mb-1">
+        <label for="aanhefDhr" class="form-label">
+            <input type="radio" name="aanhef" id="aanhefDhr" value="dhr" class="form-check-input" aria-describedby="aanhefDhr"> Dhr. 
+        </label>
+    </div>
+    <div class="mb-1">
+        <label for="aanhefMevr" class="form-label">
+            <input type="radio" name="aanhef" id="aanhefMevr" value="mevr" class="form-check-input" aria-describedby="aanhefMevr"> Mevr.
+        </label>
+        </div>
+    </div> 
+
+  <div class="mb-1">
+    <label for="voornaam" class="form-label" aria-placeholder="Voornaam">Voornaam</label>
+    <input type="firstname" placeholder="bv. 'Beau'" class="form-control" id="voornaam" aria-describedby="voornaam">
   </div>
-  <div class="mb-3">
-    <label for="deelnemerEmail" class="form-label">E-mail</label>
-    <input type="email" class="form-control" id="deelnemerEmail">
+
+  <div class="mb-1">
+    <label for="tussenvoegsel" class="form-label" aria-placeholder="Tussenvoegsel">Tussenvoegsel</label>
+    <input type="tussenvoegsel" placeholder="bv. 'ter'" class="form-control" id="tussenvoegsel" aria-describedby="tussenvoegsel">
   </div>
-  
-  <button type="submit" class="btn btn-primary">Verstuur</button>
+
+  <div class="mb-1">
+    <label for="achternaam" class="form-label" aria-placeholder="Achternaam">Achternaam</label>
+    <input type="achternaam" placeholder="bv. 'Ham'" class="form-control" id="achternaam" aria-describedby="achternaam">
+  </div>
+
+   <div class="mb-1">
+    <label for="bedrijfsnaam" class="form-label">Bedrijfsnaam</label>
+    <input type="text" placeholder="Bedrijfsnaam" class="form-control" id="bedrijfsnaam" aria-describedby="bedrijfsnaam">
+  </div>
+
+  <div class="mb-1">
+    <label for="email" class="form-label">e-mailadres</label>
+    <input type="email" placeholder="bv. 'iets@ietsanders.nl'" class="form-control" id="email" aria-describedby="email">
+  </div>
+
+  <div class="mb-1">
+    <label for="geboortedatum" class="form-label">Geboortedatum</label>
+    <input type="text" placeholder="dd-mm-jjjj" class="form-control" id="geboortedatum" aria-describedby="geboortedatum">
+  </div>
+
+  <div class="mb-1">
+    <label for="windaId" class="form-label">Winda ID (optioneel)</label>
+    <input type="text" placeholder="AB123456CD" class="form-control" id="windaId" aria-describedby="windaId">
+  </div>
+
+  <button type="submit" class="btn btn-primary">Verstuur die gegevens!</button>
 </form>
 
   <script src="index.js"></script>
