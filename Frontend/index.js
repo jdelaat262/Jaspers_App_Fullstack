@@ -1,36 +1,91 @@
+let savedCourseData = null; // Variabele om cursusgegevens tijdelijk op te slaan
+
 function pingBackend() {
+    // Functie om de verbinding met de backend te testen
     fetch('http://127.0.0.1:8000/api/v1/ping/')
     .then(response => response.json())
     .then(data => {
-        alert(data.message);
+        alert(data.message); // Toon een melding als de verbinding succesvol is
     })
     .catch(error => {
-        alert('Fout: De backend is niet bereikbaar.');
+        alert('Fout: De backend is niet bereikbaar.'); // Toon een foutmelding bij verbindingsproblemen
     });
 }
 
-function initDeelnemerForm() {
-    // We gebruiken de ID 'form-per-deelnemer'
-    const deelnemerForm = document.getElementById('form-per-deelnemer');
-
-    // Als het formulier gevonden wordt, voeg dan de event listener toe
-    if (deelnemerForm) {
-        deelnemerForm.addEventListener('submit', function(event) {
-            event.preventDefault();
-
-            // Voeg hier de logica toe voor het ophalen en verwerken van de gegevens
-            const formData = new FormData(deelnemerForm);
-            const data = Object.fromEntries(formData.entries());
+document.addEventListener('DOMContentLoaded', function() {
+    // Selecteer het hoofdformulier met de ID 'form-certificaat'
+    const certificaatForm = document.getElementById('form-certificaat');
+    
+    // Als het formulier bestaat, voeg dan een event listener toe voor het 'submit' event
+    if (certificaatForm) {
+        certificaatForm.addEventListener('submit', function(event) {
+            event.preventDefault(); // Voorkom de standaard formulierinzending
             
-            // CONTROLEER DE DATUMVELDEN EN VERVANG LEGE STRINGS MET NULL
-            if (data.geboortedatum === '') {
-                data.geboortedatum = null;
-            }
-            if (data.cursusdatum === '') {
-                data.cursusdatum = null;
+            // Schakel de submit-knop uit om dubbele inzendingen te voorkomen
+            const submitButton = certificaatForm.querySelector('button[type="submit"]');
+            if (submitButton) submitButton.disabled = true;
+
+            // --- Handmatig verzamelen van alle formuliergegevens ---
+            // Dit omzeilt potentiële problemen met FormData die velden mist.
+            const data = {
+                // Cursusgegevens
+                cursus: document.getElementById('cursus').value,
+                cursusdatum: document.getElementById('cursusdatum').value || null,
+                refreshercheck: document.getElementById('refreshercheck').checked, // Checkbox waarde
+                'geldigheid-jaren': document.getElementById('geldigheid-jaren').value,
+                'geldigheid-datum-input': document.getElementById('geldigheid-datum-input').value || null,
+
+                // Deelnemersgegevens
+                aanhef: certificaatForm.querySelector('input[name="aanhef"]:checked')?.value || '', // Radiobuttons
+                voornaam: document.getElementById('voornaam').value,
+                tussenvoegsel: document.getElementById('tussenvoegsel').value,
+                achternaam: document.getElementById('achternaam').value,
+                bedrijfsnaam: document.getElementById('bedrijfsnaam').value,
+                email: document.getElementById('email').value,
+                geboortedatum: document.getElementById('geboortedatum').value || null,
+                telefoonnummer: document.getElementById('telefoonnummer').value, // Nieuw veld
+                windaId: document.getElementById('windaId').value,
+                // notes: document.getElementById('notes').value, // Voeg toe als je een 'notes' veld hebt in HTML
+            };
+            
+            // Logica voor de 'vastzetten' checkbox
+            const vastzettenCheck = document.getElementById('vastzettenCheck');
+
+            if (vastzettenCheck && vastzettenCheck.checked) {
+                // Als de checkbox is aangevinkt, sla dan de cursusgegevens op
+                savedCourseData = {
+                    cursus: data.cursus,
+                    cursusdatum: data.cursusdatum,
+                    refreshercheck: data.refresher, // Gebruik de reeds verwerkte boolean
+                    'geldigheid-jaren': data['geldigheid-jaren'],
+                    'geldigheid-datum-input': data['geldigheid-datum-input']
+                };
             }
 
-            fetch('http://127.0.0.1:8000/api/v1/deelnemer/', {
+            // Verwerk de 'refresher' checkbox waarde naar een boolean
+            // Dit is nu al gedaan bij het handmatig verzamelen, maar we zorgen dat de sleutel klopt
+            data.refresher = !!data.refresher; // Zorgt dat het een boolean is
+
+            // Converteer lege datumstrings naar null voor de backend
+            // Dit is nu al gedaan bij het handmatig verzamelen, maar we zorgen dat het null is als leeg
+            data.geboortedatum = data.geboortedatum === '' ? null : data.geboortedatum;
+            data.cursusdatum = data.cursusdatum === '' ? null : data.cursusdatum;
+            data['geldigheid-datum-input'] = data['geldigheid-datum-input'] === '' ? null : data['geldigheid-datum-input'];
+            
+            // Verwerk de geldigheid op basis van de dropdown of de custom input
+            if (data['geldigheid-jaren'] === 'custom' && data['geldigheid-datum-input']) {
+                 data.geldigheid_jaren = data['geldigheid-datum-input']; // Gebruik de custom datum
+                 data.geldigheid_datum = data['geldigheid-datum-input']; // Sla de custom datum ook op in geldigheid_datum
+            } else {
+                 data.geldigheid_jaren = data['geldigheid-jaren']; // Gebruik de gekozen jaren
+                 data.geldigheid_datum = null; // Als geen custom datum, dan is geldigheid_datum null
+            }
+
+            // Verwijder 'geldigheid-datum-input' als deze niet langer nodig is na verwerking
+            delete data['geldigheid-datum-input'];
+            
+            // Stuur de verwerkte data naar de backend API
+            fetch('http://127.0.0.1:8000/api/v1/certificaten/', { 
                 method: 'POST',
                 headers: {
                     'Content-Type': 'application/json',
@@ -42,74 +97,45 @@ function initDeelnemerForm() {
                     // Als de respons niet OK is, gooi een foutmelding
                     throw new Error('Netwerkrespons was niet ok');
                 }
-                return response.json();
+                return response.json(); // Parseer de JSON-respons
             })
             .then(responseData => {
-                console.log('Succes:', responseData);
+                console.log('Succes! Data van de server:', responseData);
                 alert('Formulier succesvol verzonden!');
-                deelnemerForm.reset(); // Optioneel: reset het formulier
+                
+                // Reset het formulier en herstel de vastgezette gegevens indien van toepassing
+                if (vastzettenCheck && vastzettenCheck.checked && savedCourseData) {
+                    certificaatForm.reset(); // Reset het hele formulier
+                    // Herstel de vastgezette cursusgegevens
+                    document.getElementById('cursus').value = savedCourseData.cursus;
+                    document.getElementById('cursusdatum').value = savedCourseData.cursusdatum;
+                    document.getElementById('refreshercheck').checked = !!savedCourseData.refreshercheck;
+                    document.getElementById('geldigheid-jaren').value = savedCourseData['geldigheid-jaren'];
+                    document.getElementById('vastzettenCheck').checked = true; // Houd de vastzetten-checkbox aangevinkt
+                } else {
+                    certificaatForm.reset(); // Reset het hele formulier als er niets is vastgezet
+                }
             })
             .catch((error) => {
-                console.error('Fout:', error);
+                console.error('Fout bij het versturen:', error);
                 alert('Er is een fout opgetreden bij het verzenden.');
+            })
+            .finally(() => {
+                if (submitButton) submitButton.disabled = false; // Schakel de knop weer in
             });
         });
     }
-}
 
-document.addEventListener('DOMContentLoaded', function() {
-    const form = document.getElementById('form-per-cursus');
+    // Logica voor het tonen/verbergen van de custom datum input
     const dropdown = document.getElementById('geldigheid-jaren');
     const datumInput = document.getElementById('geldigheid-datum-input');
-
-    if (form) {
-        form.addEventListener('submit', function(event) {
-            // Voorkom dat de pagina herlaadt
-            event.preventDefault();
-
-            // Haal de waarden op van de velden die je wilt behouden
-            const cursusWaarde = document.getElementById('cursus').value;
-            const cursusDatumWaarde = document.getElementById('cursusdatum').value; // Corrected ID
-            const isRefresherChecked = document.getElementById('refresherCheck').checked;
-            const geldigheidWaarde = document.getElementById('geldigheid-jaren').value;
-            const aangepasteDatumWaarde = document.getElementById('geldigheid-datum-input').value;
-            
-            // Verwerk hier je formuliergegevens
-            console.log('Formulier verzonden!');
-            console.log('Cursus:', cursusWaarde);
-            console.log('Cursus Datum:', cursusDatumWaarde);
-            console.log('Is de refresher aangevinkt?', isRefresherChecked);
-            console.log('Geldigheid:', geldigheidWaarde);
-            console.log('Aangepaste datum:', aangepasteDatumWaarde);
-            
-            // Plaats de waarden terug in de velden die je wilt behouden
-            document.getElementById('cursus').value = cursusWaarde;
-            document.getElementById('cursusdatum').value = cursusDatumWaarde; // Corrected ID
-            document.getElementById('refresherCheck').checked = isRefresherChecked;
-            document.getElementById('geldigheid-jaren').value = geldigheidWaarde;
-            document.getElementById('geldigheid-datum-input').value = aangepasteDatumWaarde;
-
-            // Maak de deelnemersvelden leeg
-            document.getElementById('voornaam').value = '';
-            document.getElementById('tussenvoegsel').value = '';
-            document.getElementById('achternaam').value = '';
-            document.getElementById('bedrijfsnaam').value = '';
-            document.getElementById('email').value = '';
-            document.getElementById('geboortedatum').value = '';
-            document.getElementById('windaId').value = '';
-        });
-    }
-
     if (dropdown && datumInput) {
         dropdown.addEventListener('change', function() {
             if (this.value === 'custom') {
-                datumInput.hidden = false;
+                datumInput.hidden = false; // Toon de custom datum input
             } else {
-                datumInput.hidden = true;
+                datumInput.hidden = true; // Verberg de custom datum input
             }
         });
     }
 });
-
-// Zorg ervoor dat de initDeelnemerForm functie wordt aangeroepen.
-initDeelnemerForm();

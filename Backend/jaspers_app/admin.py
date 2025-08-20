@@ -1,4 +1,6 @@
 from django.contrib import admin
-from .models import Deelnemer  # Importeer je model
+from .models import Deelnemer, Cursus # Importeer je modellen
 
-admin.site.register(Deelnemer) # Registreer het model
+# Registreer je modellen hier
+admin.site.register(Deelnemer)
+admin.site.register(Cursus)

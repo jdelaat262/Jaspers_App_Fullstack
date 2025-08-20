@@ -15,10 +15,13 @@ Including another URLconf
     2. Add a URL to urlpatterns:  path('blog/', include('blog.urls'))
 """
 from django.contrib import admin
-from django.urls import path, include
+from django.urls import path, include # Zorg dat 'include' hier staat
 
 urlpatterns = [
     path('admin/', admin.site.urls),
-    path('api/v1/', include('jaspers_app.urls')),
+    # Dit is de correcte manier om de URL's van je app op te nemen.
+    # Alle URL's gedefinieerd in jaspers_app/urls.py zullen nu bereikbaar zijn via /api/v1/.
+    path('api/v1/', include('jaspers_app.urls')), 
 ]
+
 
