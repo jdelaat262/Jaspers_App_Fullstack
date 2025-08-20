@@ -9,7 +9,6 @@ function pingBackend() {
     });
 }
 
-// Functie om het formulier op de 'Per deelnemer' pagina te initialiseren.
 function initDeelnemerForm() {
     // We gebruiken de ID 'form-per-deelnemer'
     const deelnemerForm = document.getElementById('form-per-deelnemer');
@@ -22,6 +21,14 @@ function initDeelnemerForm() {
             // Voeg hier de logica toe voor het ophalen en verwerken van de gegevens
             const formData = new FormData(deelnemerForm);
             const data = Object.fromEntries(formData.entries());
+            
+            // CONTROLEER DE DATUMVELDEN EN VERVANG LEGE STRINGS MET NULL
+            if (data.geboortedatum === '') {
+                data.geboortedatum = null;
+            }
+            if (data.cursusdatum === '') {
+                data.cursusdatum = null;
+            }
 
             fetch('http://127.0.0.1:8000/api/v1/deelnemer/', {
                 method: 'POST',
