@@ -1,7 +1,7 @@
 from django.urls import path, include
 from rest_framework.routers import DefaultRouter
 # Zorg ervoor dat alle views die je gebruikt, hier zijn geïmporteerd
-from .views import CertificaatViewSet, ping_view, expiring_certificates_view, MobileDeelnemerViewSet 
+from .views import CertificaatViewSet, ping_view, expiring_certificates_view, MobileDeelnemerViewSet, generate_certificate_pdf 
 
 # Maak een router-instantie aan
 router = DefaultRouter()
@@ -20,4 +20,7 @@ urlpatterns = [
     
     # Dit is het URL-patroon voor de herinneringen
     path('expiring-certificates/', expiring_certificates_view, name='expiring-certificates'), 
+
+    path('generate-certificate/<int:deelnemer_id>/', generate_certificate_pdf, name='generate-certificate-pdf'), 
 ]
+
