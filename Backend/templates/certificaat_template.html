@@ -6,63 +6,75 @@
     {% load static %} 
     <style>
         /* Basisstijlen voor het certificaat */
+        html, body {
+            margin: 0;
+            padding: 0;
+            width: 100%;
+            height: 100%;
+            overflow: hidden;
+        }
         body {
             font-family: Arial, sans-serif;
-            margin: 0;
-            padding: 0; /* Geen padding op body, dit doen we in de content-wrapper */
             text-align: center;
             /* Achtergrondafbeelding toevoegen via de static tag */
-            /* VERVANG 'jouw_afbeelding.png' met de daadwerkelijke naam van je afbeelding */
-            background-image: url('{% static "C:\Users\SafetyPro\Jaspers_App\Backend\jaspers_app\static\jaspers_app\certificaat_achtergrond.png" %}'); 
-            background-size: cover; /* Afbeelding vult de hele achtergrond */
-            background-position: center; /* Centreert de afbeelding */
-            background-repeat: no-repeat; /* Voorkomt herhaling */
-            min-height: 100vh; /* Zorgt dat de achtergrond de hele viewport vult */
+            background-image: url('{% static "jaspers_app/certificaat_achtergrond.png" %}'); 
+            background-size: cover;
+            background-position: center;
+            background-repeat: no-repeat;
+            
             display: flex;
             flex-direction: column;
             justify-content: center;
             align-items: center;
-            position: relative; /* Nodig voor absolute positionering van kinderen */
+            position: relative;
         }
         
+        /* CSS voor printmedia (WeasyPrint gebruikt dit) */
+        @page {
+            margin: 0;
+            size: A4 portrait;
+        }
+
         /* Container voor de tekstinhoud die over de afbeelding ligt */
         .certificaat-content {
-            position: absolute; /* Absolute positionering over de achtergrond */
-            top: 50%; /* Begin op 50% van de hoogte van de body */
-            left: 50%; /* Begin op 50% van de breedte van de body */
-            transform: translate(-50%, -50%); /* Centreert het blok precies */
-            width: 80%; /* Breedte van het tekstblok */
-            max-width: 800px; /* Maximale breedte */
+            position: absolute;
+            top: 50%;
+            left: 50%;
+            transform: translate(-50%, -50%);
+            width: 80%;
+            max-width: 800px;
             padding: 30px;
-            color: #000; /* Tekstkleur (pas aan naar wit of een andere kleur afhankelijk van je afbeelding) */
+            color: #000; /* <-- Tekstkleur nu zwart */
             /* Optioneel: een lichte achtergrond voor betere leesbaarheid op drukke afbeeldingen */
             /* background-color: rgba(255, 255, 255, 0.8); */ 
             border-radius: 10px;
+            text-shadow: none; /* <-- Schaduw verwijderd voor scherpere zwarte tekst */
         }
 
-        h1 {
-            color: inherit; /* Erft kleur van parent (.certificaat-content) */
-            font-size: 2.5em;
-            margin-bottom: 20px;
+        h1 { 
+            color: inherit; 
+            font-size: 3em; 
+            margin-bottom: 25px; 
         }
-        h2 {
-            color: inherit;
-            font-size: 1.8em;
-            margin-bottom: 10px;
+        h2 { 
+            color: inherit; 
+            font-size: 2.2em; 
+            margin-bottom: 15px; 
         }
-        p {
-            color: inherit;
-            font-size: 1.2em;
-            margin-bottom: 5px;
+        p { 
+            color: inherit; 
+            font-size: 1.4em; 
+            margin-bottom: 8px; 
         }
-        .highlight {
-            color: #FFD700; /* Goudkleur */
-            font-weight: bold;
+        .highlight { 
+            color: #FFD700; /* Goudkleur blijft behouden, tenzij anders gewenst */
+            font-weight: bold; 
         }
-        .signature {
-            margin-top: 50px;
-            font-style: italic;
-            color: inherit;
+        .signature { 
+            margin-top: 60px; 
+            font-style: italic; 
+            color: inherit; 
+            font-size: 1.3em; 
         }
     </style>
 </head>
