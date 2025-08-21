@@ -5,7 +5,7 @@ from rest_framework.decorators import api_view
 from .models import Deelnemer, Cursus
 from .serializers import DeelnemerSerializer, CursusSerializer
 from django.db import IntegrityError
-from datetime import date, timedelta # Zorg dat timedelta hier geïmporteerd is
+from datetime import date, timedelta
 
 class CertificaatViewSet(viewsets.ModelViewSet):
     """
@@ -22,7 +22,6 @@ class CertificaatViewSet(viewsets.ModelViewSet):
         deelnemer_data = request.data.copy()
         
         # Haal cursus-gerelateerde data uit de request als strings
-        # ZORG DAT DEZE REGELS BESTAAN EN CORRECT ZIJN!
         cursus_naam = deelnemer_data.get('cursus')
         cursus_datum_str = deelnemer_data.get('cursusdatum')
         refresher = deelnemer_data.get('refresher')
@@ -30,7 +29,6 @@ class CertificaatViewSet(viewsets.ModelViewSet):
         geldigheid_datum_str = deelnemer_data.get('geldigheid_datum')
 
         # Converteer strings naar de juiste Python-typen (date of int)
-        # Gebruik .fromisoformat() voor YYYY-MM-DD datums
         cursus_datum = date.fromisoformat(cursus_datum_str) if cursus_datum_str else None
         geldigheid_jaren = int(geldigheid_jaren_str) if geldigheid_jaren_str and geldigheid_jaren_str.isdigit() else None
         geldigheid_datum = date.fromisoformat(geldigheid_datum_str) if geldigheid_datum_str else None
@@ -40,29 +38,24 @@ class CertificaatViewSet(viewsets.ModelViewSet):
         # en we WEL een cursusdatum en geldigheid_jaren hebben.
         if geldigheid_datum is None and cursus_datum and geldigheid_jaren is not None:
             # Bereken de verloopdatum door het aantal jaren bij het jaartal op te tellen
-            # .replace() behoudt de maand en dag
             geldigheid_datum = cursus_datum.replace(year=cursus_datum.year + geldigheid_jaren)
-            # Optioneel: trek een dag af om "tot en met" de dag voor de cursusdatum in het volgende jaar te krijgen
-            # geldigheid_datum -= timedelta(days=1) 
         # --- EINDE BELANGRIJKE LOGICA ---
 
         # Verwijder cursus-gerelateerde velden uit de deelnemer_data payload
-        # Deze velden horen bij het Cursus-model, niet direct bij Deelnemer
         deelnemer_data.pop('cursus', None)
         deelnemer_data.pop('cursusdatum', None)
         deelnemer_data.pop('refresher', None)
         deelnemer_data.pop('geldigheid_jaren', None)
-        deelnemer_data.pop('geldigheid_datum', None) # Verwijder deze ook uit de payload na verwerking
+        deelnemer_data.pop('geldigheid_datum', None)
 
         try:
             # Zoek een bestaande Cursus op, of maak een nieuwe aan
-            # Dit voorkomt duplicatie van cursusgegevens
             cursus_obj, created = Cursus.objects.get_or_create(
                 cursus=cursus_naam,
                 cursusdatum=cursus_datum,
                 refresher=refresher,
                 geldigheid_jaren=geldigheid_jaren,
-                geldigheid_datum=geldigheid_datum # Gebruik de berekende/ingevoerde datum
+                geldigheid_datum=geldigheid_datum
             )
         except IntegrityError:
             return Response({"error": "Cursus met deze gegevens bestaat al."}, status=status.HTTP_400_BAD_REQUEST)
@@ -74,8 +67,8 @@ class CertificaatViewSet(viewsets.ModelViewSet):
 
         # Valideer en sla de Deelnemer op
         serializer = self.get_serializer(data=deelnemer_data)
-        serializer.is_valid(raise_exception=True) # Gooi een fout als validatie mislukt
-        self.perform_create(serializer) # Sla het Deelnemer-object op
+        serializer.is_valid(raise_exception=True)
+        self.perform_create(serializer)
         
         headers = self.get_success_headers(serializer.data)
         return Response(serializer.data, status=status.HTTP_201_CREATED, headers=headers)
@@ -108,9 +101,14 @@ def expiring_certificates_view(request):
         if cursus.geldigheid_datum:
             expiration_date = cursus.geldigheid_datum
         elif cursus.cursusdatum and cursus.geldigheid_jaren is not None:
-            # Bereken de verloopdatum op basis van cursusdatum en geldigheid_jaren
-            # Door .replace(year=...) te gebruiken, wordt de dag en maand behouden
-            expiration_date = cursus.cursusdatum.replace(year=cursus.cursusdatum.year + cursus.geldigheid_jaren)
+            # Converteer cursus.geldigheid_jaren naar een integer voordat je ermee rekent
+            try:
+                geldigheid_jaren_int = int(cursus.geldigheid_jaren)
+                expiration_date = cursus.cursusdatum.replace(year=cursus.cursusdatum.year + geldigheid_jaren_int)
+            except ValueError:
+                # Handel het geval af dat geldigheid_jaren geen geldig getal is
+                # Je kunt hier loggen of een foutmelding geven, maar voor nu slaan we deze over
+                continue 
 
         if expiration_date and today <= expiration_date <= expiration_threshold:
             # Als het certificaat verloopt binnen de drempel, voeg toe aan de lijst
