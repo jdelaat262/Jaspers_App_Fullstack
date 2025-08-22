@@ -1,26 +1,32 @@
 from django.urls import path, include
 from rest_framework.routers import DefaultRouter
-# Zorg ervoor dat alle views die je gebruikt, hier zijn geïmporteerd
-from .views import CertificaatViewSet, ping_view, expiring_certificates_view, MobileDeelnemerViewSet, generate_certificate_pdf 
+from .views import (
+    CertificaatViewSet, ping_view, expiring_certificates_view, 
+    MobileDeelnemerViewSet, generate_certificate_pdf, preview_certificate_html # <-- Alle views geïmporteerd
+)
 
 # Maak een router-instantie aan
 router = DefaultRouter()
 # Registreer je CertificaatViewSet met een expliciete basename
-router.register(r'certificaten', CertificaatViewSet, basename='certificaat') # <-- Expliciete basename
+# Dit genereert URL's zoals /certificaten/ (lijst) en /certificaten/<pk>/ (detail)
+router.register(r'certificaten', CertificaatViewSet, basename='certificaat')
 # Registreer je MobileDeelnemerViewSet met een expliciete basename
-router.register(r'mobile-deelnemers', MobileDeelnemerViewSet, basename='mobile-deelnemer') # <-- Expliciete basename
-
+# Dit genereert URL's zoals /mobile-deelnemers/ (lijst) en /mobile-deelnemers/<pk>/ (detail)
+router.register(r'mobile-deelnemers', MobileDeelnemerViewSet, basename='mobile-deelnemer')
 
 urlpatterns = [
     # De router genereert nu automatisch de URL's voor je ViewSets
     path('', include(router.urls)), 
     
-    # De ping_view blijft onveranderd
+    # URL voor de ping-test
     path('ping/', ping_view, name='ping'),
     
-    # Dit is het URL-patroon voor de herinneringen
-    path('expiring-certificates/', expiring_certificates_view, name='expiring-certificates'), 
-
+    # URL voor de lijst met verlopende certificaten
+    path('expiring-certificates/', expiring_certificates_view, name='expiring-certificates'),
+    
+    # URL voor het genereren van een PDF-certificaat
     path('generate-certificate/<int:deelnemer_id>/', generate_certificate_pdf, name='generate-certificate-pdf'), 
+    
+    # URL voor de HTML-preview van het certificaat
+    path('preview-certificate/<int:deelnemer_id>/', preview_certificate_html, name='preview-certificate-html'), 
 ]
-

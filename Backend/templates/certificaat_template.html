@@ -11,44 +11,54 @@
             padding: 0;
             width: 100%;
             height: 100%;
-            overflow: hidden;
+            overflow: auto; /* Zorgt voor scrollen als de content langer is dan de viewport */
+            background-color: #f0f0f0; /* Lichte achtergrond voor de 'pagina' */
+            display: flex;
+            justify-content: center;
+            align-items: flex-start; /* Lijn bovenaan uit, niet in het midden */
         }
         body {
             font-family: Arial, sans-serif;
             text-align: center;
-            /* Achtergrondafbeelding toevoegen via de static tag */
-            background-image: url('{% static "jaspers_app/certificaat_achtergrond.png" %}'); 
-            background-size: cover;
-            background-position: center;
-            background-repeat: no-repeat;
-            
-            display: flex;
-            flex-direction: column;
-            justify-content: center;
-            align-items: center;
-            position: relative;
+            /* De achtergrondafbeelding wordt nu toegepast op de .a4-page-wrapper */
+            position: relative; /* Nodig voor absolute positionering van kinderen */
         }
         
+        /* NIEUW: Wrapper om een A4-pagina te simuleren in de browser */
+        .a4-page-wrapper {
+            position: relative; /* Nodig voor absolute positionering van .certificaat-content */
+            width: 210mm; /* Breedte van A4 */
+            min-height: 297mm; /* Hoogte van A4 */
+            margin: 20px auto; /* Centreer de 'pagina' in de browser */
+            box-shadow: 0 0 10px rgba(0, 0, 0, 0.2); /* Zachte schaduw rond de pagina */
+            background-color: white; /* Witte achtergrond voor de 'pagina' */
+            overflow: hidden; /* Voorkom scrollbalken binnen de A4-wrapper */
+
+            /* Achtergrondafbeelding toevoegen aan deze wrapper */
+            background-image: url('{% static "jaspers_app/certificaat_achtergrond.png" %}'); 
+            background-size: 100% 100%; /* Afbeelding vult de A4-wrapper */
+            background-position: center;
+            background-repeat: no-repeat;
+        }
+
         /* CSS voor printmedia (WeasyPrint gebruikt dit) */
         @page {
-            margin: 0;
-            size: A4 portrait;
+            margin: 0; /* <-- Verwijder marges van de pagina zelf in de PDF */
+            size: A4 portrait; /* <-- Staand formaat */
         }
 
         /* Container voor de tekstinhoud die over de afbeelding ligt */
         .certificaat-content {
             position: absolute;
-            top: 50%;
-            left: 50%;
-            transform: translate(-50%, -50%);
-            width: 80%;
-            max-width: 800px;
+            top: 50%; /* Startpunt van de verticale positionering */
+            left: 50%; /* Startpunt van de horizontale positionering */
+            transform: translate(-50%, -50%); /* Centreert het blok precies */
+            width: 80%; /* Breedte van het tekstblok */
+            max-width: 800px; /* Maximale breedte */
             padding: 30px;
-            color: #000; /* <-- Tekstkleur nu zwart */
-            /* Optioneel: een lichte achtergrond voor betere leesbaarheid op drukke afbeeldingen */
-            /* background-color: rgba(255, 255, 255, 0.8); */ 
-            border-radius: 10px;
-            text-shadow: none; /* <-- Schaduw verwijderd voor scherpere zwarte tekst */
+            color: #000; /* Tekstkleur (pas aan naar #fff voor wit, of een andere kleur) */
+            text-shadow: none; /* Verwijder schaduw als tekst zwart is */
+            border-radius: 10px; /* Afgeronde hoeken voor het tekstblok */
         }
 
         h1 { 
@@ -67,7 +77,7 @@
             margin-bottom: 8px; 
         }
         .highlight { 
-            color: #FFD700; /* Goudkleur blijft behouden, tenzij anders gewenst */
+            color: #FFD700; /* Goudkleur, pas aan naar #000 als je alles zwart wilt */
             font-weight: bold; 
         }
         .signature { 
@@ -79,18 +89,21 @@
     </style>
 </head>
 <body>
-    <div class="certificaat-content">
-        <h1>Certificaat van Deelname</h1>
-        <p>Dit certificaat bevestigt dat</p>
-        <h2><span class="highlight">{{ deelnemer.voornaam }} {{ deelnemer.tussenvoegsel }} {{ deelnemer.achternaam }}</span></h2>
-        <p>met succes de cursus</p>
-        <h2><span class="highlight">{{ cursus.cursus }}</span></h2>
-        <p>heeft afgerond op</p>
-        <h2><span class="highlight">{{ cursus.cursusdatum|date:"d F Y" }}</span></h2>
-        <p>Dit certificaat is geldig tot en met</p>
-        <h2><span class="highlight">{{ cursus.geldigheid_datum|date:"d F Y" }}</span></h2>
+    {# NIEUW: De content is nu omwikkeld met een A4-wrapper #}
+    <div class="a4-page-wrapper">
+        <div class="certificaat-content">
+            <h1>Certificaat van Deelname</h1>
+            <p>Dit certificaat bevestigt dat</p>
+            <h2><span class="highlight">{{ deelnemer.voornaam }} {{ deelnemer.tussenvoegsel }} {{ deelnemer.achternaam }}</span></h2>
+            <p>met succes de cursus</p>
+            <h2><span class="highlight">{{ cursus.cursus }}</span></h2>
+            <p>heeft afgerond op</p>
+            <h2><span class="highlight">{{ cursus.cursusdatum|date:"d F Y" }}</span></h2>
+            <p>Dit certificaat is geldig tot en met</p>
+            <h2><span class="highlight">{{ cursus.geldigheid_datum|date:"d F Y" }}</span></h2>
 
-        <p class="signature">Uitgereikt door SafetyPro</p>
+            <p class="signature">Uitgereikt door SafetyPro</p>
+        </div>
     </div>
 </body>
 </html>

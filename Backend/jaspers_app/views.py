@@ -1,3 +1,4 @@
+import os
 from rest_framework import viewsets
 from rest_framework.response import Response
 from rest_framework import status
@@ -6,13 +7,12 @@ from .models import Deelnemer, Cursus
 from .serializers import DeelnemerSerializer, CursusSerializer
 from django.db import IntegrityError
 from datetime import date, timedelta
-from django.shortcuts import get_object_or_404
+from django.shortcuts import get_object_or_404, render # <-- 'render' hier toevoegen!
 
 # Importeer WeasyPrint gerelateerde functies
 from weasyprint import HTML
 from django.template.loader import render_to_string
 from django.http import HttpResponse
-from django.conf import settings # <-- NIEUWE IMPORT: Nodig om STATIC_URL te gebruiken
 
 class CertificaatViewSet(viewsets.ModelViewSet):
     """
@@ -135,7 +135,7 @@ def expiring_certificates_view(request):
             
     return Response(expiring_deelnemers, status=status.HTTP_200_OK)
 
-# NIEUWE VIEW VOOR CERTIFICAAT GENERATIE
+# VIEW VOOR CERTIFICAAT GENERATIE (PDF)
 @api_view(['GET'])
 def generate_certificate_pdf(request, deelnemer_id):
     """
@@ -143,25 +143,21 @@ def generate_certificate_pdf(request, deelnemer_id):
     """
     try:
         deelnemer = get_object_or_404(Deelnemer, pk=deelnemer_id)
-        cursus = deelnemer.cursus # Haal de gekoppelde cursus op
+        cursus = deelnemer.cursus 
         
         if not cursus:
             return HttpResponse("Geen cursus gevonden voor deze deelnemer.", status=404)
 
-        # Context voor de template
         context = {
             'deelnemer': deelnemer,
             'cursus': cursus,
         }
 
-        # Render de HTML-template met de context
         html_string = render_to_string('certificaat_template.html', context)
         
-        # Converteer de HTML naar PDF met WeasyPrint
-        # BELANGRIJK: Geef base_url mee zodat WeasyPrint statische bestanden kan vinden
-        pdf_file = HTML(string=html_string, base_url=request.build_absolute_uri(settings.STATIC_URL)).write_pdf()
+        # Gebruik de absolute URL naar de root van de server voor statische bestanden
+        pdf_file = HTML(string=html_string, base_url=request.build_absolute_uri('/')).write_pdf()
 
-        # Creëer de HTTP-respons
         response = HttpResponse(pdf_file, content_type='application/pdf')
         response['Content-Disposition'] = f'attachment; filename="certificaat_{deelnemer.voornaam}_{deelnemer.achternaam}.pdf"'
         return response
@@ -170,6 +166,32 @@ def generate_certificate_pdf(request, deelnemer_id):
         return HttpResponse("Deelnemer niet gevonden.", status=404)
     except Exception as e:
         return HttpResponse(f"Fout bij het genereren van het certificaat: {str(e)}", status=500)
+
+# NIEUWE VIEW VOOR HTML PREVIEW VAN CERTIFICAAT
+@api_view(['GET'])
+def preview_certificate_html(request, deelnemer_id):
+    """
+    Toont een HTML-preview van het certificaat in de browser.
+    """
+    try:
+        deelnemer = get_object_or_404(Deelnemer, pk=deelnemer_id)
+        cursus = deelnemer.cursus
+        
+        if not cursus:
+            return HttpResponse("Geen cursus gevonden voor deze deelnemer.", status=404)
+
+        context = {
+            'deelnemer': deelnemer,
+            'cursus': cursus,
+        }
+        
+        # Render de HTML-template direct in de browser
+        return render(request, 'certificaat_template.html', context)
+
+    except Deelnemer.DoesNotExist:
+        return HttpResponse("Deelnemer niet gevonden.", status=404)
+    except Exception as e:
+        return HttpResponse(f"Fout bij het genereren van de preview: {str(e)}", status=500)
 
 # Nieuwe ViewSet voor het verwerken van mobiele formulieren via QR-code
 class MobileDeelnemerViewSet(viewsets.ModelViewSet):
@@ -182,7 +204,7 @@ class MobileDeelnemerViewSet(viewsets.ModelViewSet):
 
     def create(self, request, *args, **kwargs):
         deelnemer_data = request.data.copy()
-        cursus_id = deelnemer_data.get('cursus_id') # Verwacht cursus ID van mobiele formulier
+        cursus_id = deelnemer_data.get('cursus_id')
 
         if not cursus_id:
             return Response({"error": "Cursus ID is vereist."}, status=status.HTTP_400_BAD_REQUEST)
@@ -192,7 +214,6 @@ class MobileDeelnemerViewSet(viewsets.ModelViewSet):
         except Exception as e:
             return Response({"error": f"Cursus niet gevonden: {str(e)}"}, status=status.HTTP_404_NOT_FOUND)
 
-        # Koppel de bestaande Cursus aan de Deelnemer-data
         deelnemer_data['cursus'] = cursus_obj.id
 
         deelnemer_data.pop('cursus_id', None)
