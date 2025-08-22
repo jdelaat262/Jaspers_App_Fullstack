@@ -19,8 +19,6 @@
         }
         body {
             font-family: Arial, sans-serif;
-            text-align: center;
-            /* De achtergrondafbeelding wordt nu toegepast op de .a4-page-wrapper */
             position: relative; /* Nodig voor absolute positionering van kinderen */
         }
         
@@ -50,41 +48,61 @@
         /* Container voor de tekstinhoud die over de afbeelding ligt */
         .certificaat-content {
             position: absolute;
-            top: 50%; /* Startpunt van de verticale positionering */
-            left: 50%; /* Startpunt van de horizontale positionering */
+            top: 40%; /* <-- Aangepast: iets hoger geplaatst */
+            left: 40%; /* Startpunt van de horizontale positionering */
             transform: translate(-50%, -50%); /* Centreert het blok precies */
-            width: 80%; /* Breedte van het tekstblok */
-            max-width: 800px; /* Maximale breedte */
-            padding: 30px;
-            color: #000; /* Tekstkleur (pas aan naar #fff voor wit, of een andere kleur) */
-            text-shadow: none; /* Verwijder schaduw als tekst zwart is */
+            width: 70%; /* <-- Aangepast: iets smaller gemaakt */
+            max-width: 700px; /* Maximale breedte */
+            padding: 20px; /* <-- Aangepast: interne ruimte rond de tekst */
+            color: #000; /* Tekstkleur nu zwart */
+            text-shadow: none; /* Schaduw verwijderd voor scherpere zwarte tekst */
             border-radius: 10px; /* Afgeronde hoeken voor het tekstblok */
+            word-wrap: break-word; 
+            overflow-wrap: break-word;
+            text-align: left; /* <-- Expliciet links uitlijnen */
+
+            /* TIJDELIJKE STIJL VOOR DEBUGGING: VERWIJDER DEZE REGEL ALS JE KLAAR BENT */
+            /* border: 1px dashed red; */ /* Tijdelijke rand om de grenzen te zien */
+        }
+
+        /* Expliciet text-align: left; voor alle tekstblokken */
+        h1, h2, p, .signature { 
+            color: inherit; 
+            word-wrap: break-word; 
+            overflow-wrap: break-word;
+            text-align: left; /* <-- Expliciet links uitlijnen */
+            margin-left: 0; /* <-- Zorg dat er geen extra marge is */
+            margin-right: 0; /* <-- Zorg dat er geen extra marge is */
         }
 
         h1 { 
-            color: inherit; 
-            font-size: 3em; 
-            margin-bottom: 25px; 
+            font-size: 2.8em; /* <-- Iets kleiner gemaakt */
+            margin-bottom: 20px; /* <-- Afstand onder de titel */
         }
         h2 { 
-            color: inherit; 
-            font-size: 2.2em; 
-            margin-bottom: 15px; 
+            font-size: 2em; /* <-- Iets kleiner gemaakt */
+            margin-bottom: 10px; /* <-- Afstand onder namen/cursus */
         }
         p { 
-            color: inherit; 
-            font-size: 1.4em; 
-            margin-bottom: 8px; 
+            font-size: 1.3em; /* <-- Iets kleiner gemaakt */
+            margin-bottom: 5px; /* <-- Afstand onder algemene tekst */
         }
         .highlight { 
             color: #FFD700; /* Goudkleur, pas aan naar #000 als je alles zwart wilt */
             font-weight: bold; 
         }
         .signature { 
-            margin-top: 60px; 
+            margin-top: 50px; /* <-- Afstand boven de handtekening */
             font-style: italic; 
             color: inherit; 
-            font-size: 1.3em; 
+            font-size: 1.2em; /* <-- Iets kleiner gemaakt */
+        }
+
+        /* NIEUW: Verberg de downloadknop bij het afdrukken */
+        @media print {
+            .download-button-container {
+                display: none; /* Verberg de hele container met de knop */
+            }
         }
     </style>
 </head>
@@ -92,7 +110,7 @@
     {# NIEUW: De content is nu omwikkeld met een A4-wrapper #}
     <div class="a4-page-wrapper">
         <div class="certificaat-content">
-            <h1>Certificaat van Deelname</h1>
+            <h1>Certificaat</h1>
             <p>Dit certificaat bevestigt dat</p>
             <h2><span class="highlight">{{ deelnemer.voornaam }} {{ deelnemer.tussenvoegsel }} {{ deelnemer.achternaam }}</span></h2>
             <p>met succes de cursus</p>
@@ -104,6 +122,33 @@
 
             <p class="signature">Uitgereikt door SafetyPro</p>
         </div>
+
+        {# NIEUW: Knop voor het downloaden van de PDF #}
+        <div class="download-button-container">
+            <button id="downloadPdfBtn" class="download-button">Download Certificaat als PDF</button>
+        </div>
     </div>
+
+    <script>
+        document.addEventListener('DOMContentLoaded', function() {
+            const downloadPdfBtn = document.getElementById('downloadPdfBtn');
+            if (downloadPdfBtn) {
+                downloadPdfBtn.addEventListener('click', function() {
+                    // Haal de deelnemer_id uit de huidige URL
+                    const pathParts = window.location.pathname.split('/');
+                    const deelnemerId = pathParts[pathParts.length - 2]; // Het ID is het voorlaatste deel van de URL
+
+                    if (deelnemerId) {
+                        // Construeer de URL voor de PDF-generatie
+                        const pdfUrl = `/api/v1/generate-certificate/${deelnemerId}/`;
+                        // Open de URL in een nieuw tabblad om de PDF te downloaden
+                        window.open(pdfUrl, '_blank');
+                    } else {
+                        alert('Kan deelnemer ID niet vinden in de URL.');
+                    }
+                });
+            }
+        });
+    </script>
 </body>
 </html>
