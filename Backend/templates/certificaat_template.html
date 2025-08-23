@@ -48,54 +48,85 @@
         /* Container voor de tekstinhoud die over de afbeelding ligt */
         .certificaat-content {
             position: absolute;
-            top: 40%; /* <-- Aangepast: iets hoger geplaatst */
+            top: 15%; /* <-- Aangepast: Begin op 20% van boven (experimenteer hiermee!) */
             left: 40%; /* Startpunt van de horizontale positionering */
-            transform: translate(-50%, -50%); /* Centreert het blok precies */
-            width: 70%; /* <-- Aangepast: iets smaller gemaakt */
+            transform: translateX(-50%); /* <-- Aangepast: Centreert alleen horizontaal */
+            width: 70%; /* Breedte van het tekstblok */
             max-width: 700px; /* Maximale breedte */
-            padding: 20px; /* <-- Aangepast: interne ruimte rond de tekst */
-            color: #000; /* Tekstkleur nu zwart */
-            text-shadow: none; /* Schaduw verwijderd voor scherpere zwarte tekst */
+            padding: 20px;
+            color: #000; /* Tekstkleur (pas aan naar #fff voor wit, of een andere kleur) */
+            text-shadow: none; /* Verwijder schaduw als tekst zwart is */
             border-radius: 10px; /* Afgeronde hoeken voor het tekstblok */
             word-wrap: break-word; 
             overflow-wrap: break-word;
-            text-align: left; /* <-- Expliciet links uitlijnen */
+            text-align: left; /* Expliciet links uitlijnen */
 
             /* TIJDELIJKE STIJL VOOR DEBUGGING: VERWIJDER DEZE REGEL ALS JE KLAAR BENT */
             /* border: 1px dashed red; */ /* Tijdelijke rand om de grenzen te zien */
         }
 
         /* Expliciet text-align: left; voor alle tekstblokken */
-        h1, h2, p, .signature { 
+        h1, h2, p, .signature, .address-line { 
             color: inherit; 
             word-wrap: break-word; 
             overflow-wrap: break-word;
-            text-align: left; /* <-- Expliciet links uitlijnen */
-            margin-left: 0; /* <-- Zorg dat er geen extra marge is */
-            margin-right: 0; /* <-- Zorg dat er geen extra marge is */
+            text-align: left; /* Expliciet links uitlijnen */
+            margin-left: 0; /* Zorg dat er geen extra marge is */
+            margin-right: 0; /* Zorg dat er geen extra marge is */
         }
 
         h1 { 
-            font-size: 2.8em; /* <-- Iets kleiner gemaakt */
-            margin-bottom: 20px; /* <-- Afstand onder de titel */
+            font-size: 2.8em; 
+            margin-bottom: 20px; 
         }
         h2 { 
-            font-size: 2em; /* <-- Iets kleiner gemaakt */
-            margin-bottom: 10px; /* <-- Afstand onder namen/cursus */
+            font-size: 2em; 
+            margin-bottom: 10px; 
         }
         p { 
-            font-size: 1.3em; /* <-- Iets kleiner gemaakt */
-            margin-bottom: 5px; /* <-- Afstand onder algemene tekst */
+            font-size: 1.3em; 
+            margin-bottom: 5px; 
         }
         .highlight { 
             color: #FFD700; /* Goudkleur, pas aan naar #000 als je alles zwart wilt */
             font-weight: bold; 
         }
         .signature { 
-            margin-top: 50px; /* <-- Afstand boven de handtekening */
+            margin-top: 50px; 
             font-style: italic; 
             color: inherit; 
-            font-size: 1.2em; /* <-- Iets kleiner gemaakt */
+            font-size: 1.2em; 
+        }
+        .address-line { /* Nieuwe stijl voor adresregels */
+            font-size: 1em; /* Kleinere tekst voor adres */
+            margin-top: 2px; /* Kleine marge tussen adresregels */
+            margin-bottom: 2px;
+        }
+
+        /* Stijl voor de downloadknop */
+        .download-button-container {
+            position: absolute;
+            bottom: 20px; /* Afstand vanaf de onderkant van de A4-pagina */
+            left: 50%;
+            transform: translateX(-50%);
+            width: 100%;
+            text-align: center;
+        }
+        .download-button {
+            background-color: #FFD700;
+            border: 1px solid #FFD700;
+            border-radius: 0.5rem;
+            color: #000;
+            padding: 0.75rem 1.5rem;
+            font-weight: bold;
+            cursor: pointer;
+            transition: background-color 0.3s ease, border-color 0.3s ease, box-shadow 0.3s ease;
+            text-decoration: none; /* Verwijder onderstreping van de link */
+        }
+        .download-button:hover {
+            background-color: #e6c200;
+            border-color: #e6c200;
+            box-shadow: 0 0.25rem 0.5rem rgba(255, 215, 0, 0.25);
         }
 
         /* NIEUW: Verberg de downloadknop bij het afdrukken */
@@ -113,7 +144,14 @@
             <h1>Certificaat</h1>
             <p>Dit certificaat bevestigt dat</p>
             <h2><span class="highlight">{{ deelnemer.voornaam }} {{ deelnemer.tussenvoegsel }} {{ deelnemer.achternaam }}</span></h2>
-            <p>met succes de cursus</p>
+            
+            {# HIER IS DE WIJZIGING: Gebruik een {% if %} statement #}
+            {% if cursus.refresher %}
+                <p>met succes de herhalingscursus</p>
+            {% else %}
+                <p>met succes de cursus</p>
+            {% endif %}
+
             <h2><span class="highlight">{{ cursus.cursus }}</span></h2>
             <p>heeft afgerond op</p>
             <h2><span class="highlight">{{ cursus.cursusdatum|date:"d F Y" }}</span></h2>
@@ -121,6 +159,10 @@
             <h2><span class="highlight">{{ cursus.geldigheid_datum|date:"d F Y" }}</span></h2>
 
             <p class="signature">Uitgereikt door SafetyPro</p>
+            {# NIEUW: Adresgegevens onderaan #}
+            <p class="address-line">Siliciumweg 28, 3812 SX Amersfoort</p>
+            <p class="address-line">+31 33 720 0998</p>
+            <p class="address-line">training@safetypro.nl</p>
         </div>
 
         {# NIEUW: Knop voor het downloaden van de PDF #}
