@@ -8,7 +8,7 @@ function pingBackend() {
         alert(data.message); // Toon een melding als de verbinding succesvol is
     })
     .catch(error => {
-        alert('Fout: De backend is niet bereikbaar.'); // Toon een foutmelding bij verbindingsproblemen
+        alert('Fout: De backend is niet bereikbaar.'); 
     });
 }
 

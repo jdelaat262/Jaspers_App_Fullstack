@@ -7,7 +7,7 @@ from .models import Deelnemer, Cursus
 from .serializers import DeelnemerSerializer, CursusSerializer
 from django.db import IntegrityError
 from datetime import date, timedelta
-from django.shortcuts import get_object_or_404, render # <-- 'render' hier toevoegen!
+from django.shortcuts import get_object_or_404, render
 
 # Importeer WeasyPrint gerelateerde functies
 from weasyprint import HTML
@@ -72,8 +72,7 @@ class CertificaatViewSet(viewsets.ModelViewSet):
                     achternaam=achternaam,
                     geboortedatum=geboortedatum
                 )
-                deelnemer_obj.cursus = cursus_obj
-                deelnemer_obj.save()
+                deelnemer_obj.cursussen.add(cursus_obj) 
                 
                 serializer = self.get_serializer(deelnemer_obj)
                 return Response(serializer.data, status=status.HTTP_200_OK)
@@ -82,7 +81,7 @@ class CertificaatViewSet(viewsets.ModelViewSet):
             except Exception as e:
                 return Response({"error": f"Fout bij zoeken deelnemer: {str(e)}"}, status=status.HTTP_400_BAD_REQUEST)
 
-        deelnemer_data['cursus'] = cursus_obj.id
+        deelnemer_data['cursussen'] = [cursus_obj.id]
 
         serializer = self.get_serializer(data=deelnemer_data)
         serializer.is_valid(raise_exception=True)
@@ -109,45 +108,44 @@ def expiring_certificates_view(request):
     expiring_deelnemers = []
 
     for deelnemer in Deelnemer.objects.all():
-        cursus = deelnemer.cursus
-        if not cursus:
+        cursussen = deelnemer.cursussen.all()
+        if not cursussen:
             continue
-
-        expiration_date = None
         
-        if cursus.geldigheid_datum:
-            expiration_date = cursus.geldigheid_datum
-        elif cursus.cursusdatum and cursus.geldigheid_jaren is not None:
-            try:
-                geldigheid_jaren_int = int(cursus.geldigheid_jaren)
-                expiration_date = cursus.cursusdatum.replace(year=cursus.cursusdatum.year + geldigheid_jaren_int)
-            except ValueError:
-                continue 
+        for cursus in cursussen:
+            expiration_date = None
+            
+            if cursus.geldigheid_datum:
+                expiration_date = cursus.geldigheid_datum
+            elif cursus.cursusdatum and cursus.geldigheid_jaren is not None:
+                try:
+                    geldigheid_jaren_int = int(cursus.geldigheid_jaren)
+                    expiration_date = cursus.cursusdatum.replace(year=cursus.cursusdatum.year + geldigheid_jaren_int)
+                except ValueError:
+                    continue 
 
-        if expiration_date and today <= expiration_date <= expiration_threshold:
-            deelnemer_serializer = DeelnemerSerializer(deelnemer)
-            cursus_serializer = CursusSerializer(cursus)
-            expiring_deelnemers.append({
-                'deelnemer': deelnemer_serializer.data,
-                'cursus': cursus_serializer.data,
-                'verloopdatum': expiration_date.isoformat()
-            })
+            if expiration_date and today <= expiration_date <= expiration_threshold:
+                deelnemer_serializer = DeelnemerSerializer(deelnemer)
+                cursus_serializer = CursusSerializer(cursus)
+                expiring_deelnemers.append({
+                    'deelnemer': deelnemer_serializer.data,
+                    'cursus': cursus_serializer.data,
+                    'verloopdatum': expiration_date.isoformat()
+                })
             
     return Response(expiring_deelnemers, status=status.HTTP_200_OK)
 
 # VIEW VOOR CERTIFICAAT GENERATIE (PDF)
 @api_view(['GET'])
-def generate_certificate_pdf(request, deelnemer_id):
+def generate_certificate_pdf(request, deelnemer_id, cursus_id):
     """
-    Genereert een PDF-certificaat voor een specifieke deelnemer.
+    Genereert een PDF-certificaat voor een specifieke deelnemer en cursus.
     """
     try:
         deelnemer = get_object_or_404(Deelnemer, pk=deelnemer_id)
-        cursus = deelnemer.cursus 
+        # Zoek de specifieke cursus die bij de deelnemer hoort
+        cursus = deelnemer.cursussen.get(pk=cursus_id)
         
-        if not cursus:
-            return HttpResponse("Geen cursus gevonden voor deze deelnemer.", status=404)
-
         context = {
             'deelnemer': deelnemer,
             'cursus': cursus,
@@ -155,27 +153,29 @@ def generate_certificate_pdf(request, deelnemer_id):
 
         html_string = render_to_string('certificaat_template.html', context)
         
-        # Gebruik de absolute URL naar de root van de server voor statische bestanden
         pdf_file = HTML(string=html_string, base_url=request.build_absolute_uri('/')).write_pdf()
 
         response = HttpResponse(pdf_file, content_type='application/pdf')
-        response['Content-Disposition'] = f'attachment; filename="certificaat_{deelnemer.voornaam}_{deelnemer.achternaam}.pdf"'
+        response['Content-Disposition'] = f'attachment; filename="certificaat_{deelnemer.voornaam}_{deelnemer.achternaam}_{cursus.id}.pdf"'
         return response
 
     except Deelnemer.DoesNotExist:
         return HttpResponse("Deelnemer niet gevonden.", status=404)
+    except Cursus.DoesNotExist:
+        return HttpResponse("Cursus niet gevonden of niet gekoppeld aan deze deelnemer.", status=404)
     except Exception as e:
         return HttpResponse(f"Fout bij het genereren van het certificaat: {str(e)}", status=500)
 
 # NIEUWE VIEW VOOR HTML PREVIEW VAN CERTIFICAAT
 @api_view(['GET'])
-def preview_certificate_html(request, deelnemer_id):
+def preview_certificate_html(request, deelnemer_id, cursus_id):
     """
     Toont een HTML-preview van het certificaat in de browser.
     """
     try:
         deelnemer = get_object_or_404(Deelnemer, pk=deelnemer_id)
-        cursus = deelnemer.cursus
+        # Zoek de specifieke cursus die bij de deelnemer hoort
+        cursus = deelnemer.cursussen.get(pk=cursus_id)
         
         if not cursus:
             return HttpResponse("Geen cursus gevonden voor deze deelnemer.", status=404)
@@ -185,11 +185,12 @@ def preview_certificate_html(request, deelnemer_id):
             'cursus': cursus,
         }
         
-        # Render de HTML-template direct in de browser
         return render(request, 'certificaat_template.html', context)
 
     except Deelnemer.DoesNotExist:
         return HttpResponse("Deelnemer niet gevonden.", status=404)
+    except Cursus.DoesNotExist:
+        return HttpResponse("Cursus niet gevonden of niet gekoppeld aan deze deelnemer.", status=404)
     except Exception as e:
         return HttpResponse(f"Fout bij het genereren van de preview: {str(e)}", status=500)
 
@@ -214,7 +215,8 @@ class MobileDeelnemerViewSet(viewsets.ModelViewSet):
         except Exception as e:
             return Response({"error": f"Cursus niet gevonden: {str(e)}"}, status=status.HTTP_404_NOT_FOUND)
 
-        deelnemer_data['cursus'] = cursus_obj.id
+        # WIJZIGING: Gebruik de correcte veldnaam 'cursussen' en stuur een lijst met de ID
+        deelnemer_data['cursussen'] = [cursus_obj.id]
 
         deelnemer_data.pop('cursus_id', None)
 

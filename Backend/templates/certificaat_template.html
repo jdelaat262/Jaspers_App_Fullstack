@@ -1,7 +1,7 @@
 <!DOCTYPE html>
 <html>
 <head>
-    <title>Certificaat</title>
+    <title>Certificaat voor {{ deelnemer.voornaam }}</title>
     {# Laad de staticfiles template tags van Django #}
     {% load static %} 
     <style>
@@ -22,17 +22,15 @@
             position: relative; /* Nodig voor absolute positionering van kinderen */
         }
         
-        /* NIEUW: Wrapper om een A4-pagina te simuleren in de browser */
+        /* Wrapper om een A4-pagina te simuleren in de browser */
         .a4-page-wrapper {
-            position: relative; /* Nodig voor absolute positionering van .certificaat-content */
+            position: relative;
             width: 210mm; /* Breedte van A4 */
             min-height: 297mm; /* Hoogte van A4 */
             margin: 20px auto; /* Centreer de 'pagina' in de browser */
             box-shadow: 0 0 10px rgba(0, 0, 0, 0.2); /* Zachte schaduw rond de pagina */
             background-color: white; /* Witte achtergrond voor de 'pagina' */
             overflow: hidden; /* Voorkom scrollbalken binnen de A4-wrapper */
-
-            /* Achtergrondafbeelding toevoegen aan deze wrapper */
             background-image: url('{% static "jaspers_app/certificaat_achtergrond.png" %}'); 
             background-size: 100% 100%; /* Afbeelding vult de A4-wrapper */
             background-position: center;
@@ -41,28 +39,25 @@
 
         /* CSS voor printmedia (WeasyPrint gebruikt dit) */
         @page {
-            margin: 0; /* <-- Verwijder marges van de pagina zelf in de PDF */
-            size: A4 portrait; /* <-- Staand formaat */
+            margin: 0;
+            size: A4 portrait;
         }
 
         /* Container voor de tekstinhoud die over de afbeelding ligt */
         .certificaat-content {
             position: absolute;
-            top: 15%; /* <-- Aangepast: Begin op 20% van boven (experimenteer hiermee!) */
-            left: 40%; /* Startpunt van de horizontale positionering */
-            transform: translateX(-50%); /* <-- Aangepast: Centreert alleen horizontaal */
-            width: 70%; /* Breedte van het tekstblok */
-            max-width: 700px; /* Maximale breedte */
+            top: 15%; 
+            left: 40%;
+            transform: translateX(-50%);
+            width: 70%;
+            max-width: 700px;
             padding: 20px;
-            color: #000; /* Tekstkleur (pas aan naar #fff voor wit, of een andere kleur) */
-            text-shadow: none; /* Verwijder schaduw als tekst zwart is */
-            border-radius: 10px; /* Afgeronde hoeken voor het tekstblok */
+            color: #000;
+            text-shadow: none;
+            border-radius: 10px;
             word-wrap: break-word; 
             overflow-wrap: break-word;
-            text-align: left; /* Expliciet links uitlijnen */
-
-            /* TIJDELIJKE STIJL VOOR DEBUGGING: VERWIJDER DEZE REGEL ALS JE KLAAR BENT */
-            /* border: 1px dashed red; */ /* Tijdelijke rand om de grenzen te zien */
+            text-align: left;
         }
 
         /* Expliciet text-align: left; voor alle tekstblokken */
@@ -70,9 +65,9 @@
             color: inherit; 
             word-wrap: break-word; 
             overflow-wrap: break-word;
-            text-align: left; /* Expliciet links uitlijnen */
-            margin-left: 0; /* Zorg dat er geen extra marge is */
-            margin-right: 0; /* Zorg dat er geen extra marge is */
+            text-align: left;
+            margin-left: 0;
+            margin-right: 0;
         }
 
         h1 { 
@@ -88,7 +83,7 @@
             margin-bottom: 5px; 
         }
         .highlight { 
-            color: #FFD700; /* Goudkleur, pas aan naar #000 als je alles zwart wilt */
+            color: #FFD700;
             font-weight: bold; 
         }
         .signature { 
@@ -97,16 +92,16 @@
             color: inherit; 
             font-size: 1.2em; 
         }
-        .address-line { /* Nieuwe stijl voor adresregels */
-            font-size: 1em; /* Kleinere tekst voor adres */
-            margin-top: 2px; /* Kleine marge tussen adresregels */
+        .address-line {
+            font-size: 1em;
+            margin-top: 2px;
             margin-bottom: 2px;
         }
 
         /* Stijl voor de downloadknop */
         .download-button-container {
             position: absolute;
-            bottom: 20px; /* Afstand vanaf de onderkant van de A4-pagina */
+            bottom: 20px;
             left: 50%;
             transform: translateX(-50%);
             width: 100%;
@@ -121,7 +116,7 @@
             font-weight: bold;
             cursor: pointer;
             transition: background-color 0.3s ease, border-color 0.3s ease, box-shadow 0.3s ease;
-            text-decoration: none; /* Verwijder onderstreping van de link */
+            text-decoration: none;
         }
         .download-button:hover {
             background-color: #e6c200;
@@ -129,23 +124,21 @@
             box-shadow: 0 0.25rem 0.5rem rgba(255, 215, 0, 0.25);
         }
 
-        /* NIEUW: Verberg de downloadknop bij het afdrukken */
+        /* Verberg de downloadknop bij het afdrukken */
         @media print {
             .download-button-container {
-                display: none; /* Verberg de hele container met de knop */
+                display: none;
             }
         }
     </style>
 </head>
 <body>
-    {# NIEUW: De content is nu omwikkeld met een A4-wrapper #}
     <div class="a4-page-wrapper">
         <div class="certificaat-content">
             <h1>Certificaat</h1>
             <p>Dit certificaat bevestigt dat</p>
             <h2><span class="highlight">{{ deelnemer.voornaam }} {{ deelnemer.tussenvoegsel }} {{ deelnemer.achternaam }}</span></h2>
             
-            {# HIER IS DE WIJZIGING: Gebruik een {% if %} statement #}
             {% if cursus.refresher %}
                 <p>met succes de herhalingscursus</p>
             {% else %}
@@ -159,13 +152,11 @@
             <h2><span class="highlight">{{ cursus.geldigheid_datum|date:"d F Y" }}</span></h2>
 
             <p class="signature">Uitgereikt door SafetyPro</p>
-            {# NIEUW: Adresgegevens onderaan #}
             <p class="address-line">Siliciumweg 28, 3812 SX Amersfoort</p>
             <p class="address-line">+31 33 720 0998</p>
             <p class="address-line">training@safetypro.nl</p>
         </div>
 
-        {# NIEUW: Knop voor het downloaden van de PDF #}
         <div class="download-button-container">
             <button id="downloadPdfBtn" class="download-button">Download Certificaat als PDF</button>
         </div>
@@ -176,17 +167,15 @@
             const downloadPdfBtn = document.getElementById('downloadPdfBtn');
             if (downloadPdfBtn) {
                 downloadPdfBtn.addEventListener('click', function() {
-                    // Haal de deelnemer_id uit de huidige URL
                     const pathParts = window.location.pathname.split('/');
-                    const deelnemerId = pathParts[pathParts.length - 2]; // Het ID is het voorlaatste deel van de URL
+                    const deelnemerId = pathParts[pathParts.length - 3];
+                    const cursusId = pathParts[pathParts.length - 2];
 
-                    if (deelnemerId) {
-                        // Construeer de URL voor de PDF-generatie
-                        const pdfUrl = `/api/v1/generate-certificate/${deelnemerId}/`;
-                        // Open de URL in een nieuw tabblad om de PDF te downloaden
+                    if (deelnemerId && cursusId) {
+                        const pdfUrl = `/api/v1/generate-certificate/${deelnemerId}/${cursusId}/`;
                         window.open(pdfUrl, '_blank');
                     } else {
-                        alert('Kan deelnemer ID niet vinden in de URL.');
+                        alert('Kan deelnemer- of cursus-ID niet vinden in de URL.');
                     }
                 });
             }
