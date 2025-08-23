@@ -137,7 +137,7 @@
         <div class="certificaat-content">
             <h1>Certificaat</h1>
             <p>Dit certificaat bevestigt dat</p>
-            <h2><span class="highlight">{{ deelnemer.voornaam }} {{ deelnemer.tussenvoegsel }} {{ deelnemer.achternaam }}</span></h2>
+            <h2><span class="highlight">{{ deelnemer.voornaam }} {% if deelnemer.tussenvoegsel %}{{ deelnemer.tussenvoegsel }} {% endif %}{{ deelnemer.achternaam }}</span></h2>
             
             {% if cursus.refresher %}
                 <p>met succes de herhalingscursus</p>
