@@ -88,6 +88,16 @@ DATABASES = {
     }
 }
 
+# E-mail instellingen voor het versturen van berichten
+# Dit zijn de basisinstellingen voor de meeste SMTP-servers (zoals Gmail, Outlook, etc.)
+EMAIL_BACKEND = 'django.core.mail.backends.smtp.EmailBackend'
+EMAIL_HOST = 'smtp.gmail.com'  # Bijvoorbeeld 'smtp.gmail.com' of 'smtp.mail.com'
+EMAIL_PORT = 587  # Dit is de standaard poort voor TLS
+EMAIL_USE_TLS = True
+EMAIL_HOST_USER = 'jdelaat1@gmail.com'
+EMAIL_HOST_PASSWORD = 'dckj hnpk msya lqcm' # Let op: gebruik een app-wachtwoord voor Gmail
+DEFAULT_FROM_EMAIL = EMAIL_HOST_USER
+
 
 # Password validation
 # https://docs.djangoproject.com/en/5.2/ref/settings/#auth-password-validators

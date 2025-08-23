@@ -8,6 +8,15 @@ from .serializers import DeelnemerSerializer, CursusSerializer
 from django.db import IntegrityError
 from datetime import date, timedelta
 from django.shortcuts import get_object_or_404, render
+from django.core.mail import EmailMessage
+from django.conf import settings
+from weasyprint import HTML
+from django.template.loader import render_to_string
+from django.shortcuts import get_object_or_404
+from rest_framework.decorators import api_view
+from rest_framework.response import Response
+from rest_framework import status
+from .models import Deelnemer, Cursus
 
 # Importeer WeasyPrint gerelateerde functies
 from weasyprint import HTML
@@ -95,7 +104,7 @@ def ping_view(request):
     """
     Een eenvoudige view om de verbinding met de backend te testen.
     """
-    return Response({'message': 'Hello world, de backend is verbonden!'})
+    return Response({'message': 'Goed bezig, de backend is verbonden!'})
 
 @api_view(['GET'])
 def expiring_certificates_view(request):
@@ -193,6 +202,54 @@ def preview_certificate_html(request, deelnemer_id, cursus_id):
         return HttpResponse("Cursus niet gevonden of niet gekoppeld aan deze deelnemer.", status=404)
     except Exception as e:
         return HttpResponse(f"Fout bij het genereren van de preview: {str(e)}", status=500)
+    
+@api_view(['POST'])
+def send_certificate_email(request, deelnemer_id, cursus_id):
+    """
+    Genereert een PDF-certificaat en verstuurt dit als e-mailbijlage naar de deelnemer.
+    """
+    try:
+        deelnemer = get_object_or_404(Deelnemer, pk=deelnemer_id)
+        cursus = deelnemer.cursussen.get(pk=cursus_id)
+
+        # 1. Genereer de PDF
+        context = {
+            'deelnemer': deelnemer,
+            'cursus': cursus,
+        }
+        html_string = render_to_string('certificaat_template.html', context)
+        pdf_file = HTML(string=html_string, base_url=request.build_absolute_uri('/')).write_pdf()
+
+        # 2. Maak de e-mail aan
+        subject = f"Je certificaat voor de cursus {cursus.cursus}"
+        body = f"Beste {deelnemer.voornaam},\n\nHierbij sturen wij je jouw certificaat voor de cursus '{cursus.cursus}', die je succesvol hebt afgerond. Je vindt het certificaat als bijlage bij deze e-mail.\n\nMet vriendelijke groet,\n\nSafetyPro"
+        to_email = deelnemer.email
+        
+        email = EmailMessage(
+            subject,
+            body,
+            settings.EMAIL_HOST_USER,  # Gebruikt de zender uit settings.py
+            [to_email],
+        )
+        
+        # 3. Voeg de PDF toe als bijlage
+        email.attach(
+            f"certificaat_{deelnemer.voornaam}_{deelnemer.achternaam}.pdf",
+            pdf_file,
+            'application/pdf'
+        )
+
+        # 4. Verzend de e-mail
+        email.send()
+        
+        return Response({"message": "E-mail succesvol verzonden!"}, status=status.HTTP_200_OK)
+
+    except Deelnemer.DoesNotExist:
+        return Response({"error": "Deelnemer niet gevonden."}, status=status.HTTP_404_NOT_FOUND)
+    except Cursus.DoesNotExist:
+        return Response({"error": "Cursus niet gevonden of niet gekoppeld aan deze deelnemer."}, status=status.HTTP_404_NOT_FOUND)
+    except Exception as e:
+        return Response({"error": f"Fout bij het versturen van de e-mail: {str(e)}"}, status=status.HTTP_500_INTERNAL_SERVER_ERROR)
 
 # Nieuwe ViewSet voor het verwerken van mobiele formulieren via QR-code
 class MobileDeelnemerViewSet(viewsets.ModelViewSet):
