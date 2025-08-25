@@ -58,6 +58,52 @@ MIDDLEWARE = [
 ]
 
 ROOT_URLCONF = 'jaspers_backend.urls'
+# --- Beveiligingsinstellingen ---
+# ALLOWED_HOSTS: Lijst van host/domeinnamen waarvoor deze Django-site mag dienen.
+# Dit is essentieel om de DisallowedHost fout te voorkomen.
+ALLOWED_HOSTS = [
+    '192.168.1.161', # Jouw lokale IP-adres is toegevoegd
+    'localhost',     # Voor lokale ontwikkeling via http://localhost
+    '127.0.0.1',     # Standaard localhost IP
+    # Voeg hier eventueel andere domeinnamen toe wanneer je app live gaat (bijv. 'jouwdomein.com')
+]
+
+# --- CORS Headers Configuratie ---
+# CORS_ALLOWED_ORIGINS: Specificeert welke frontend origins (protocollen, hosts, poorten)
+# zijn toegestaan om cross-origin requests te doen naar je Django-backend.
+CORS_ALLOWED_ORIGINS = [
+    "http://localhost:8000",          # Frontend draait op 8000
+    "http://192.168.1.161:8000",      # Frontend draait op 8000
+    # Voeg hier eventueel andere URLs toe zodra je app live gaat (bijv. "https://jouwdomein.com")
+]
+
+# CORS_ALLOW_METHODS: Geeft aan welke HTTP-methoden zijn toegestaan voor cross-origin requests.
+CORS_ALLOW_METHODS = [
+    'DELETE',
+    'GET',
+    'OPTIONS',
+    'POST',
+    'PUT',
+]
+
+# CORS_ALLOW_CREDENTIALS: Sta het versturen van credentials (cookies, auth headers) toe bij cross-origin requests.
+# Dit is vaak nodig als je authenticatie of CSRF-tokens gebruikt.
+CORS_ALLOW_CREDENTIALS = True 
+
+# --- CSRF Configuratie voor AJAX / Frontend ---
+# CSRF_COOKIE_NAME: De naam van de cookie die het CSRF-token bevat.
+CSRF_COOKIE_NAME = "csrftoken"
+# CSRF_TRUSTED_ORIGINS: Lijst van origins die als "vertrouwd" worden beschouwd voor CSRF-doeleinden.
+# BELANGRIJK: De waarden moeten beginnen met een schema (http:// of https://).
+CSRF_TRUSTED_ORIGINS = [
+    "http://192.168.1.161", # Jouw IP-adres (zonder poort)
+    "http://localhost",     # Voor localhost (zonder poort)
+    # Voeg hier ook je productiedomeinen toe, inclusief schema
+]
+
+# CSRF_COOKIE_HTTPONLY: Voorkomt dat JavaScript het CSRF-cookie leest. Voor debugging kun je dit op False zetten,
+# maar voor productie is True veiliger. We zetten hem op False om JS toegang te geven voor de fetch.
+CSRF_COOKIE_HTTPONLY = False
 
 TEMPLATES = [
     {
