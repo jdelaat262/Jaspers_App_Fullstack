@@ -10,6 +10,8 @@ document.addEventListener('DOMContentLoaded', () => {
     // Referenties naar de opslaan en delen knoppen
     const saveQrCodeBtn = document.getElementById('saveQrCodeBtn');
     const shareQrCodeBtn = document.getElementById('shareQrCodeBtn');
+    // Referentie naar de directe link in de modal
+    const directLink = document.getElementById('directLink'); 
 
     let generatedQrCodeCanvas = null; // Variabele om de gegenereerde QR code canvas bij te houden
 
@@ -26,15 +28,13 @@ document.addEventListener('DOMContentLoaded', () => {
 
         // Controleer of de verplichte velden zijn ingevuld
         if (!cursusNaam || !cursusdatum) {
-            // Gebruik een Bootstrap toast of custom alert in plaats van de browser alert
-            // Voor nu houden we de alert om de functionaliteit te behouden
             alert('Vul alstublieft de cursusnaam en cursusdatum in.');
             return;
         }
 
-        // Base URL voor het formulier dat de QR-code zal ontvangen
-        // BELANGRIJK: Pas 'qr-scan-form.html' aan naar de daadwerkelijke URL van je ontvangstpagina.
-        // Dit kan een absolute URL zijn als de ontvangstpagina op een andere server staat.
+        // De basis-URL is nu vast ingesteld op het opgegeven IP-adres en poort.
+        // Dit zorgt ervoor dat de QR-code altijd naar deze HTTP-server verwijst,
+        // ongeacht hoe de qr-code-generator.html pagina zelf wordt geopend (file:// of localhost).
         const baseUrl = 'http://192.168.1.161:8000/qr-scan-form.html';
 
         // Maak een URLSearchParams object om de gegevens als query parameters toe te voegen
@@ -60,7 +60,6 @@ document.addEventListener('DOMContentLoaded', () => {
         generatedQrCodeCanvas = null; // Reset de canvas referentie
 
         // Initialiseer de QR-code generator en plaats deze in de modal div
-        // Zorg ervoor dat de qrcodeInModalDiv leeg is voordat je een nieuwe QR-code genereert
         const qrcode = new QRCode(qrcodeInModalDiv, {
             text: fullUrl, // De URL die in de QR-code gecodeerd wordt
             width: 256,    // Breedte van de QR-code
@@ -71,16 +70,17 @@ document.addEventListener('DOMContentLoaded', () => {
         });
 
         // Wacht tot de QR code is gerenderd om de canvas te pakken
-        // QRCodeJS rendert asynchroon, dus we moeten even wachten
         setTimeout(() => {
             generatedQrCodeCanvas = qrcodeInModalDiv.querySelector('canvas');
             if (generatedQrCodeCanvas) {
-                // Toon de modal na het genereren van de QR code
+                // Vul de directe link in
+                directLink.href = fullUrl;
+                directLink.textContent = fullUrl; // Toon de volledige URL als tekst van de link
                 qrCodeModal.show();
             } else {
                 console.error("QR Code canvas niet gevonden na generatie.");
             }
-        }, 100); // Korte vertraging om de rendering van de QR-code te garanderen
+        }, 100); 
 
         console.log("QR Code gegenereerd met URL:", fullUrl);
     });
@@ -104,7 +104,6 @@ document.addEventListener('DOMContentLoaded', () => {
     // Functie om de QR-code te delen
     shareQrCodeBtn.addEventListener('click', () => {
         if (generatedQrCodeCanvas) {
-            // Gebruik de Web Share API indien beschikbaar
             if (navigator.share) {
                 generatedQrCodeCanvas.toBlob((blob) => {
                     const file = new File([blob], 'safetypro-qrcode.png', { type: 'image/png' });
@@ -118,7 +117,6 @@ document.addEventListener('DOMContentLoaded', () => {
                     });
                 }, 'image/png');
             } else {
-                // Fallback voor browsers die Web Share API niet ondersteunen
                 alert('Deel functionaliteit wordt niet ondersteund in deze browser. Sla de QR-code op en deel deze handmatig.');
             }
         } else {

@@ -31,6 +31,8 @@
     </div>
 </nav>
 
+<div id="message-container" class="container mt-4"></div> <!-- Toegevoegd voor feedback -->
+
 <div class="center-container">
     <h1 class="display-4 mb-2 text-center">Certificaat Registratie</h1>
     <p class="lead text-center">Vul de resterende gegevens in en verstuur voor registratie.</p>
@@ -56,7 +58,7 @@
         </div>
     </div>
 
-    <!-- Geldigheid en Refresher (readonly) -->
+    <!-- Geldigheid en Refresher (readonly/disabled) -->
     <div class="row">
         <div class="col-md-6">
             <div class="mb-3">
@@ -163,7 +165,7 @@
     <button type="submit" class="btn btn-primary">Registreren</button>
 </form>
 
-<script src="qr-scan-form.js"></script>
+<script type="module" src="qr-scan-form.js"></script> <!-- type="module" is toegevoegd -->
 <script src="https://cdn.jsdelivr.net/npm/bootstrap@5.3.3/dist/js/bootstrap.bundle.min.js" xintegrity="sha384-YvpcrYf0tY3lHB60NNkmXc5s9fDVZLESaAA55NDzOxhy9GkcIdslK1eN7N6jIeHz" crossorigin="anonymous"></script>
 </body>
 </html>
