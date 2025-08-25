@@ -35,7 +35,7 @@ document.addEventListener('DOMContentLoaded', () => {
         // De basis-URL is nu vast ingesteld op het opgegeven IP-adres en poort.
         // Dit zorgt ervoor dat de QR-code altijd naar deze HTTP-server verwijst,
         // ongeacht hoe de qr-code-generator.html pagina zelf wordt geopend (file:// of localhost).
-        const baseUrl = 'http://192.168.1.161:8000/qr-scan-form.html';
+        const baseUrl = 'http://192.168.1.161:8001/qr-scan-form.html';
 
         // Maak een URLSearchParams object om de gegevens als query parameters toe te voegen
         const params = new URLSearchParams();

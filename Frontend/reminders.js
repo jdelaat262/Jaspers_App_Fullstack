@@ -22,7 +22,7 @@ document.addEventListener('DOMContentLoaded', function() {
                 sendReminderBtn.style.display = 'none';
             }
 
-            fetch('http://127.0.0.1:8000/api/v1/expiring-certificates/')
+            fetch('http://127.0.0.1:8001/api/v1/expiring-certificates/')
                 .then(response => {
                     if (!response.ok) {
                         throw new Error('Netwerkrespons was niet ok');
@@ -113,7 +113,7 @@ document.addEventListener('DOMContentLoaded', function() {
 
 // De pingBackend functie kan ook hier staan, of in een apart gedeeld bestand als je wilt
 function pingBackend() {
-    fetch('http://127.0.0.1:8000/api/v1/ping/')
+    fetch('http://127.0.0.1:8001/api/v1/ping/')
     .then(response => response.json())
     .then(data => {
         alert(data.message);
